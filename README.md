@@ -45,7 +45,7 @@
 - RPC
 - RDMA
 
-### 3. 操作系统(TBA)
+### 3. 操作系统
 - 操作系统xv6
 - 汇编语言MIPS/RISC-V
 - 内存虚拟化技术
@@ -80,17 +80,6 @@
 - io_uring-Linux 5.1
 - 协程(C++20)
 
-##  Labs
-- 命令行参数解析（100行左右）
-- 解析CSV文件（200行左右）
-- 文件I/O（500行左右)
-- 多进程系统（800行左右）
-- 多线程系统（1000行左右)
- 
-## Project(TBA)
-- [Sherman](https://github.com/thustorage/Sherman)
-- [ShiftLock](https://github.com/thustorage/shiftlock)
-- [TeRM](https://github.com/thustorage/TeRM)
 
 
 ## 参考书籍
@@ -105,7 +94,6 @@
 - CS162
 - CS107
 - CSSE2310
-- [system programming](https://github.com/ls1-sys-prog-course/docs)
 
 ## 附录
 - ICS: 计算机系统导论
