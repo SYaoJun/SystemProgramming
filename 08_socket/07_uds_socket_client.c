@@ -11,7 +11,7 @@
 #define BUFFER_SIZE 256
 
 int main(void) {
-    int sockfd;
+    int                sockfd;
     struct sockaddr_un servaddr;
 
     sockfd = socket(AF_LOCAL, SOCK_STREAM, 0);
@@ -20,7 +20,7 @@ int main(void) {
     servaddr.sun_family = AF_LOCAL;
     strcpy(servaddr.sun_path, UNIXSTR_PATH);
 
-    connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+    connect(sockfd, (struct sockaddr*) &servaddr, sizeof(servaddr));
 
     char buf[BUFFER_SIZE];
 

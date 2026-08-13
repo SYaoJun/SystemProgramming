@@ -6,9 +6,9 @@
 #include <sys/socket.h>
 
 int main() {
-    int sockfd, ret;
+    int                sockfd, ret;
     struct sockaddr_in serv_addr;
-    struct hostent *server;
+    struct hostent*    server;
 
     // 创建socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -18,7 +18,7 @@ int main() {
     }
 
     // 解析服务器地址
-    server = gethostbyname("localhost");  // 使用localhost作为示例
+    server = gethostbyname("localhost"); // 使用localhost作为示例
     if (server == NULL) {
         fprintf(stderr, "ERROR, no such host\n");
         exit(0);
@@ -27,11 +27,11 @@ int main() {
     // 构建服务器地址结构
     memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(3306);  // mysql默认端口
+    serv_addr.sin_port   = htons(3306); // mysql默认端口
     memcpy(&serv_addr.sin_addr.s_addr, server->h_addr, server->h_length);
 
     // 连接到服务器
-    ret = connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+    ret = connect(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr));
     if (ret < 0) {
         perror("ERROR connecting");
         exit(1);

@@ -9,14 +9,14 @@ int int_power(int x, int y);
 int int_math_helper(int x, int y);
 
 int main(void) {
-    int x1 = 10, y1 = 3, r1 = 0;
+    int   x1 = 10, y1 = 3, r1 = 0;
     float x2 = 10.0, y2 = 3.0, r2 = 0.0;
-    
+
     for (int i = 0; i < 10000000; i++) {
         r1 += int_math(x1, y1);
         r2 += float_math(x2, y2);
     }
-    
+
     return 0;
 }
 

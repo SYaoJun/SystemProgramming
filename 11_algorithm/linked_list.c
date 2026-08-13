@@ -6,36 +6,36 @@
 #include <string.h>
 
 typedef struct ListNode {
-    struct ListNode *next;
-    int value;
+    struct ListNode* next;
+    int              value;
 } ListNode;
 
 typedef struct List {
-    ListNode *head;
-    ListNode *tail;
+    ListNode*    head;
+    ListNode*    tail;
     unsigned int len;
 } List;
 
-void add_node(int value, List *list) {
-    ListNode *node = (ListNode *)malloc(sizeof(ListNode));
-    node->next = NULL;
-    node->value = value;
+void add_node(int value, List* list) {
+    ListNode* node = (ListNode*) malloc(sizeof(ListNode));
+    node->next     = NULL;
+    node->value    = value;
     // 当前链表中是否存在节点元素
     if (list->tail == NULL) {
         list->tail = list->head = node;
     } else {
         list->tail->next = node;
-        list->tail = node;
+        list->tail       = node;
     }
     list->len++;
 }
 
-void remove_node(int value, List *list) {
+void remove_node(int value, List* list) {
     if (list == NULL) {
         return;
     }
-    ListNode *cursor = list->head;
-    ListNode *prev = NULL;
+    ListNode* cursor = list->head;
+    ListNode* prev   = NULL;
     while (cursor) {
         if (cursor->value == value) {
             // 删除的是不是头部和尾部
@@ -50,12 +50,12 @@ void remove_node(int value, List *list) {
             list->len--;
             return;
         }
-        prev = cursor;
+        prev   = cursor;
         cursor = cursor->next;
     }
 }
-void iterate_list(List *list) {
-    ListNode *cursor = list->head;
+void iterate_list(List* list) {
+    ListNode* cursor = list->head;
     while (cursor) {
         printf("value = %d\n", cursor->value);
         cursor = cursor->next;
@@ -64,14 +64,14 @@ void iterate_list(List *list) {
 
 int main() {
     // create a list
-    List *list = (List *)malloc(sizeof(List));
+    List* list = (List*) malloc(sizeof(List));
     list->head = NULL;
     list->tail = NULL;
     add_node(101, list);
     add_node(102, list);
     add_node(103, list);
-    iterate_list(list);  // 101 102 103
+    iterate_list(list); // 101 102 103
     remove_node(102, list);
-    iterate_list(list);  // 101 103
+    iterate_list(list); // 101 103
     return 0;
 }

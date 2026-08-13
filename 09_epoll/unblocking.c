@@ -1,8 +1,8 @@
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
 
 int main() {
     int fd = open("/tmp/testfile", O_RDONLY);
@@ -26,7 +26,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    char buffer[128];
+    char    buffer[128];
     ssize_t bytesRead;
 
     while (1) {

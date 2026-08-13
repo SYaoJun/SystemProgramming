@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-void handle_sigint(int signum) { printf("Received SIGINT in child\n"); }
+void handle_sigint(int signum) {
+    printf("Received SIGINT in child\n");
+}
 
 int main() {
     sigset_t newmask, oldmask;

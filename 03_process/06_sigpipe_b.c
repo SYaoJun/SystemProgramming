@@ -1,15 +1,15 @@
-#include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <unistd.h>
 void sigpipe_handler(int signum) {
     printf("Caught SIGPIPE signal: %d\n", signum);
-    exit(1);  // 退出程序
+    exit(1); // 退出程序
 }
 
 int main() {
-    int pipefd[2];
+    int  pipefd[2];
     char buffer[] = "Hello, World!";
 
     // 创建管道
@@ -22,18 +22,18 @@ int main() {
     signal(SIGPIPE, sigpipe_handler);
 
     pid_t pid = fork();
-    if(pid == 0){
+    if (pid == 0) {
         // child
-    // 子读0 父写1
+        // 子读0 父写1
         close(pipefd[1]);
         char buf[1024];
         read(pipefd[0], buf, sizeof(buf));
         printf("buf:%s\n", buf);
         close(pipefd[0]);
         exit(0);
-    }else {
+    } else {
         // parent
-        char *s = "hello";
+        char* s = "hello";
         close(pipefd[0]);
         write(pipefd[1], s, 5);
         printf("close\n");

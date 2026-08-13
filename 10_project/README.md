@@ -13,9 +13,8 @@ accept
 ## 多进程服务器
 fork
 
-waitpid 
+waitpid
 ## 多线程
 pthread_create
 
 detach
-

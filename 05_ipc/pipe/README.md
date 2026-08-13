@@ -10,7 +10,7 @@
 
 ## 目标
 > ps aux | grep yaojun
-- 让一个程序把另一个程序的输出作为输入。 
+- 让一个程序把另一个程序的输出作为输入。
 
 ## popen
 - popen()函数用于创建一个管道，fork一个子进程，关闭不需要的文件描述符，执行exec函数族，返回文件指针
@@ -24,4 +24,3 @@
 ![关系图](../../img/pipe.png)
 ## 文档
 [飞书文档](https://ym9omojhd5.feishu.cn/docx/doxcn99jYl3Dx54sjRhfFEsRjZS)
-

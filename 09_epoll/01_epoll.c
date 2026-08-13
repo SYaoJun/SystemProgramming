@@ -10,7 +10,7 @@
 #define MAX_EVENTS 10
 #define BACKLOG 10
 
-int create_and_bind(const char *ip, int port) {
+int create_and_bind(const char* ip, int port) {
     int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (listen_fd == -1) {
         perror("socket failed");
@@ -18,8 +18,8 @@ int create_and_bind(const char *ip, int port) {
     }
 
     int yes = 1;
-    if (setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) ==
-        -1) {
+    if (setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes))
+        == -1) {
         perror("setsockopt failed");
         close(listen_fd);
         return -1;
@@ -27,11 +27,11 @@ int create_and_bind(const char *ip, int port) {
 
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
+    addr.sin_family      = AF_INET;
+    addr.sin_port        = htons(port);
     addr.sin_addr.s_addr = inet_addr(ip);
 
-    if (bind(listen_fd, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
+    if (bind(listen_fd, (struct sockaddr*) &addr, sizeof(addr)) == -1) {
         perror("bind failed");
         close(listen_fd);
         return -1;
@@ -48,16 +48,16 @@ int create_and_bind(const char *ip, int port) {
 
 void handle_new_connection(int epoll_fd, int listen_fd) {
     struct sockaddr_in client_addr;
-    socklen_t client_addr_len = sizeof(client_addr);
-    int client_fd =
-        accept(listen_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+    socklen_t          client_addr_len = sizeof(client_addr);
+    int                client_fd
+        = accept(listen_fd, (struct sockaddr*) &client_addr, &client_addr_len);
     if (client_fd == -1) {
         perror("accept failed");
         return;
     }
 
     printf("Accepted new connection from %s:%d\n",
-           inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+        inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
     // 设置client_fd为非阻塞
     if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1) {
@@ -68,7 +68,7 @@ void handle_new_connection(int epoll_fd, int listen_fd) {
 
     // 将新的客户端套接字添加到epoll监听
     struct epoll_event ev;
-    ev.events = EPOLLIN;
+    ev.events  = EPOLLIN;
     ev.data.fd = client_fd;
 
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &ev) == -1) {
@@ -86,9 +86,9 @@ int main() {
     }
 
     // 监听多个IP地址
-    const char *ips[] = {"192.168.1.100",
-                         "192.168.1.101"};  // 要监听的IP地址列表
-    int ports[] = {8080, 8081};             // 对应的端口列表
+    const char* ips[]
+        = { "192.168.1.100", "192.168.1.101" }; // 要监听的IP地址列表
+    int ports[] = { 8080, 8081 };               // 对应的端口列表
 
     for (int i = 0; i < sizeof(ips) / sizeof(ips[0]); ++i) {
         int listen_fd = create_and_bind(ips[i], ports[i]);
@@ -99,7 +99,7 @@ int main() {
 
         // 将监听套接字添加到epoll实例
         struct epoll_event ev;
-        ev.events = EPOLLIN;
+        ev.events  = EPOLLIN;
         ev.data.fd = listen_fd;
 
         if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, listen_fd, &ev) == -1) {

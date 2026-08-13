@@ -1,13 +1,13 @@
 
-#define _GNU_SOURCE    /* Obtain O_DIRECT definition from <fcntl.h> */
-#include <stdint.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#define _GNU_SOURCE /* Obtain O_DIRECT definition from <fcntl.h> */
 #include <fcntl.h>
-#include <stdio.h>
 #include <libaio.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define FILE_PATH "testfile"
 #define BUF_SIZE 4096 // 通常块设备的扇区大小
@@ -24,18 +24,18 @@ int main() {
     // char *buffer = (char *)malloc(BUF_SIZE);
     // 如何分配对齐的内存呢？
     // posix_memalign((void **)&buffer, BUF_SIZE, BUF_SIZE);
-    
+
     //
-//     void *aligned_buffer;
-// if (posix_memalign(&aligned_buffer, BUF_SIZE, BUF_SIZE) != 0) {
-//     perror("Failed to allocate aligned buffer");
-//     close(fd);
-//     return 1;
-// }
-     // 使用 posix_memalign 来分配对齐内存，确保内存对齐
-    char *buffer = NULL;
+    //     void *aligned_buffer;
+    // if (posix_memalign(&aligned_buffer, BUF_SIZE, BUF_SIZE) != 0) {
+    //     perror("Failed to allocate aligned buffer");
+    //     close(fd);
+    //     return 1;
+    // }
+    // 使用 posix_memalign 来分配对齐内存，确保内存对齐
+    char* buffer = NULL;
     // 分配4k大小，并对齐到4k
-    if (posix_memalign((void **)&buffer, BUF_SIZE, BUF_SIZE) != 0) {
+    if (posix_memalign((void**) &buffer, BUF_SIZE, BUF_SIZE) != 0) {
         perror("Failed to allocate aligned buffer");
         close(fd);
         return 1;

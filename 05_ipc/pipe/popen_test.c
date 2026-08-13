@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 int main() {
-    FILE *fp;
+    FILE* fp;
 
     // 使用 popen 执行可执行文件 A，并打开写管道
     fp = popen("./a.out", "w");

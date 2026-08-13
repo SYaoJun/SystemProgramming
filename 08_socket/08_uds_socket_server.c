@@ -11,8 +11,8 @@
 #define BUFFER_SIZE 256
 
 int main(void) {
-    int listenfd, connfd;
-    socklen_t len;
+    int                listenfd, connfd;
+    socklen_t          len;
     struct sockaddr_un servaddr, cliaddr;
 
     if (-1 == (listenfd = socket(AF_LOCAL, SOCK_STREAM, 0))) {
@@ -25,7 +25,7 @@ int main(void) {
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sun_family = AF_LOCAL;
     strcpy(servaddr.sun_path, UNIXSTR_PATH);
-    if (-1 == bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr))) {
+    if (-1 == bind(listenfd, (struct sockaddr*) &servaddr, sizeof(servaddr))) {
         perror("bind");
         exit(EXIT_FAILURE);
     }
@@ -34,7 +34,7 @@ int main(void) {
 
     len = sizeof(cliaddr);
 
-    if (-1 == (connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &len))) {
+    if (-1 == (connfd = accept(listenfd, (struct sockaddr*) &cliaddr, &len))) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
@@ -43,7 +43,8 @@ int main(void) {
 
     while (1) {
         bzero(buf, sizeof(buf));
-        if (read(connfd, buf, BUFFER_SIZE) == 0) break;
+        if (read(connfd, buf, BUFFER_SIZE) == 0)
+            break;
         printf("Receive: %s", buf);
     }
 

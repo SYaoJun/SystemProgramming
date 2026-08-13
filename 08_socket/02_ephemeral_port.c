@@ -15,7 +15,7 @@ int get_ephemeral_port(int server_port, int lfd) {
         memset(&ad, 0, sizeof(struct sockaddr_in));
         socklen_t len = sizeof(struct sockaddr_in);
         // 5. 获取临时端口PORT, 返回这个fd绑定的address，后两个参数是出参
-        if (getsockname(lfd, (struct sockaddr *)&ad, &len) == -1) {
+        if (getsockname(lfd, (struct sockaddr*) &ad, &len) == -1) {
             perror("getsockname: ");
             exit(EXIT_FAILURE);
         } else {
@@ -29,7 +29,7 @@ int get_ephemeral_port(int server_port, int lfd) {
 usage:
     ./server [port]
 */
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     int server_port = 0;
     if (argc >= 2) {
         server_port = atoi(argv[0]);
@@ -54,8 +54,8 @@ int main(int argc, char *argv[]) {
     // 本机任意IP到达的客户端请求
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     // 3. 绑定IP
-    if (bind(lfd, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr)) ==
-        -1) {
+    if (bind(lfd, (struct sockaddr*) &serverAddr, sizeof(struct sockaddr))
+        == -1) {
         perror("bind: ");
         exit(EXIT_FAILURE);
     }

@@ -15,8 +15,8 @@ void sig_usr(int signum) {
 int main() {
     struct sigaction sa_usr;
 
-    sa_usr.sa_flags = 0;
-    sa_usr.sa_handler = sig_usr;  // 设置信号处理函数
+    sa_usr.sa_flags   = 0;
+    sa_usr.sa_handler = sig_usr; // 设置信号处理函数
 
     // 为 SIGUSR1 信号设置处理动作
     if (sigaction(SIGUSR1, &sa_usr, NULL) == -1) {

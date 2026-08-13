@@ -1,6 +1,6 @@
 # socket套接字
-1. TCP 
-2. UDP 
+1. TCP
+2. UDP
 3. UDS (Unix domain socket)
 ## 编译
 ```sh

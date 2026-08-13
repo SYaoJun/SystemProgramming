@@ -2,8 +2,12 @@
 #include <stdbool.h>
 #include <stdio.h>
 typedef int (*my_func_ptr)(int a, int b);
-int add(int a, int b) { return a + b; }
-int subtract(int a, int b) { return a - b; }
+int add(int a, int b) {
+    return a + b;
+}
+int subtract(int a, int b) {
+    return a - b;
+}
 #define NUM 100
 
 my_func_ptr callback_array[NUM];

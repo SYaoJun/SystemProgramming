@@ -1,21 +1,21 @@
+#include <fcntl.h>
+#include <liburing.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <liburing.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-#define QUEUE_DEPTH  1
-#define BLOCK_SIZE   4096
+#define QUEUE_DEPTH 1
+#define BLOCK_SIZE 4096
 
-void io_uring_read_example(const char *filename) {
-    struct io_uring ring;
-    struct io_uring_cqe *cqe;
-    struct io_uring_sqe *sqe;
-    char *buffer;
-    int fd, ret;
+void io_uring_read_example(const char* filename) {
+    struct io_uring      ring;
+    struct io_uring_cqe* cqe;
+    struct io_uring_sqe* sqe;
+    char*                buffer;
+    int                  fd, ret;
 
     // Allocate buffer for reading data
     buffer = malloc(BLOCK_SIZE);

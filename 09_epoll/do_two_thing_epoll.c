@@ -5,15 +5,15 @@ nc localhost 8080
 # 查看服务器监听的端口
 netstat -apn | grep do_two_thing_epoll
 */
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
+#include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/epoll.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/epoll.h>
+#include <unistd.h>
 
 #define MAX_EVENTS 10
 #define PORT 8080
@@ -31,10 +31,10 @@ void set_nonblocking(int sockfd) {
 }
 
 int main() {
-    int listen_sock, conn_sock, nfds, epollfd, n;
+    int                listen_sock, conn_sock, nfds, epollfd, n;
     struct epoll_event ev, events[MAX_EVENTS];
     struct sockaddr_in addr;
-    char buffer[1024];
+    char               buffer[1024];
 
     // 创建监听套接字
     listen_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -46,11 +46,11 @@ int main() {
     set_nonblocking(listen_sock);
 
     memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
+    addr.sin_family      = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
-    addr.sin_port = htons(PORT);
+    addr.sin_port        = htons(PORT);
 
-    if (bind(listen_sock, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
+    if (bind(listen_sock, (struct sockaddr*) &addr, sizeof(addr)) == -1) {
         perror("bind");
         close(listen_sock);
         exit(EXIT_FAILURE);
@@ -71,7 +71,7 @@ int main() {
     }
 
     // 将监听套接字添加到 epoll 实例中
-    ev.events = EPOLLIN;
+    ev.events  = EPOLLIN;
     ev.data.fd = listen_sock;
     if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listen_sock, &ev) == -1) {
         perror("epoll_ctl: listen_sock");
@@ -80,7 +80,7 @@ int main() {
     }
 
     // 将标准输入添加到 epoll 实例中
-    ev.events = EPOLLIN;
+    ev.events  = EPOLLIN;
     ev.data.fd = STDIN_FILENO;
     if (epoll_ctl(epollfd, EPOLL_CTL_ADD, STDIN_FILENO, &ev) == -1) {
         perror("epoll_ctl: stdin");
@@ -105,7 +105,7 @@ int main() {
                     continue;
                 }
                 set_nonblocking(conn_sock);
-                ev.events = EPOLLIN | EPOLLET;
+                ev.events  = EPOLLIN | EPOLLET;
                 ev.data.fd = conn_sock;
                 if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
                     perror("epoll_ctl: conn_sock");

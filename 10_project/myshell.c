@@ -1,44 +1,44 @@
 #include <arpa/inet.h>
 #include <ctype.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/socket.h>
-#include <unistd.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <unistd.h>
 
-int main(int argc, char* argv[]){
-    int cmdNumber = 2;
+int main(int argc, char* argv[]) {
+    int  cmdNumber = 2;
     char filename[1024][1024];
-    int fileno = 0;
+    int  fileno = 0;
     // keep the filename
-    for(int i = 1; i < argc; i++){
+    for (int i = 1; i < argc; i++) {
         strcpy(filename[fileno], argv[i]);
         fileno++;
     }
-    int pipeFd[2];
+    int   pipeFd[2];
     pid_t pids[1024];
-    int status = 0;
-    char* cmdArray[32][32] = {{"cat", NULL}, {"wc", "-l", NULL}};
-    // step 2: loop every filename 
+    int   status           = 0;
+    char* cmdArray[32][32] = { { "cat", NULL }, { "wc", "-l", NULL } };
+    // step 2: loop every filename
     int fd;
-    for(int j = 0; j < fileno; j++){
-         fd = open(filename[j], O_RDONLY);
+    for (int j = 0; j < fileno; j++) {
+        fd = open(filename[j], O_RDONLY);
         // step 3: loop every pipeline command
-        for(int i = 0; i < cmdNumber; i++){ 
+        for (int i = 0; i < cmdNumber; i++) {
             // cmdArray[0]
             // create the sub process and execute the command
-            pipe(pipeFd);// use to connect two command A->B
+            pipe(pipeFd); // use to connect two command A->B
             pid_t pid = fork();
-            if(pid > 0){ // parent
+            if (pid > 0) { // parent
                 pids[i] = pid;
                 close(pipeFd[1]);
-                fd = pipeFd[0]; // keep in temp variable, use in next command 
-            }else{ // child
+                fd = pipeFd[0]; // keep in temp variable, use in next command
+            } else {            // child
                 dup2(fd, STDIN_FILENO);
                 close(fd);
                 dup2(pipeFd[1], STDOUT_FILENO);
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]){
             }
         }
         // step 4: reap all children process
-        for(int i = 0; i < cmdNumber; i++){
+        for (int i = 0; i < cmdNumber; i++) {
             waitpid(pids[i], &status, 0);
         }
     }

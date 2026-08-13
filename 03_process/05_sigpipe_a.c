@@ -1,15 +1,15 @@
-#include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void sigpipe_handler(int signum) {
     printf("Caught SIGPIPE signal: %d\n", signum);
-    exit(1);  // 退出程序
+    exit(1); // 退出程序
 }
 
 int main() {
-    int pipefd[2];
+    int  pipefd[2];
     char buffer[] = "Hello, World!";
 
     // 创建管道

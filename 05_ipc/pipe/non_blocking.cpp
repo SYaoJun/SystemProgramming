@@ -1,6 +1,6 @@
-#include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <unistd.h>
 
 int setnonblocking(int fd) {
     int old_option = fcntl(fd, F_GETFL);
@@ -10,7 +10,7 @@ int setnonblocking(int fd) {
 }
 int main() {
     int fd = open("jun.txt", O_CREAT | O_RDWR);
-    if(fd < 0) {
+    if (fd < 0) {
         printf("error!");
         _exit(0);
     }

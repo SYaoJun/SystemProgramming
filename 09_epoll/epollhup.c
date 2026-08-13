@@ -1,12 +1,12 @@
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
+#include <sys/epoll.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 #define MAX_EVENTS 10
 #define PORT 8080
@@ -22,7 +22,7 @@ void set_non_blocking(int sockfd) {
 }
 
 int main() {
-    int server_fd, epoll_fd;
+    int                server_fd, epoll_fd;
     struct sockaddr_in server_addr;
 
     // 创建服务器 socket
@@ -34,11 +34,12 @@ int main() {
 
     // 绑定地址和端口
     memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
+    server_addr.sin_family      = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    server_addr.sin_port        = htons(PORT);
 
-    if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+    if (bind(server_fd, (struct sockaddr*) &server_addr, sizeof(server_addr))
+        < 0) {
         perror("bind failed");
         close(server_fd);
         exit(EXIT_FAILURE);
@@ -60,7 +61,7 @@ int main() {
 
     // 将 server_fd 添加到 epoll
     struct epoll_event ev, events[MAX_EVENTS];
-    ev.events = EPOLLIN; // 监听新的连接
+    ev.events  = EPOLLIN; // 监听新的连接
     ev.data.fd = server_fd;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &ev) < 0) {
         perror("epoll_ctl failed");
@@ -87,7 +88,7 @@ int main() {
                 }
                 set_non_blocking(client_fd);
 
-                ev.events = EPOLLIN | EPOLLRDHUP; // 监听读和对端关闭
+                ev.events  = EPOLLIN | EPOLLRDHUP; // 监听读和对端关闭
                 ev.data.fd = client_fd;
                 if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &ev) < 0) {
                     perror("epoll_ctl add client failed");
@@ -107,10 +108,12 @@ int main() {
                     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
                 } else if (events[i].events & EPOLLIN) {
                     // 处理客户端发送的数据
-                    char buffer[1024] = {0};
-                    ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer));
+                    char    buffer[1024] = { 0 };
+                    ssize_t bytes_read
+                        = read(client_fd, buffer, sizeof(buffer));
                     if (bytes_read > 0) {
-                        printf("Received from client (fd: %d): %s\n", client_fd, buffer);
+                        printf("Received from client (fd: %d): %s\n", client_fd,
+                            buffer);
                     } else if (bytes_read == 0) {
                         // 客户端关闭连接
                         puts("from read 0");
