@@ -5,7 +5,8 @@ union TEST {
 };
 int main() {
     union TEST test;
-    test.a = 0x0102; // 不能引用共用体变量，只能引用共用体变量中的成员。
+    test.a = 0x0102; // Cannot reference the union variable itself, only its
+                     // members.
     if (test.b[0] == 0x01 && test.b[1] == 0x02) {
         printf("big endian.\n");
     } else if (test.b[0] == 0x02 && test.b[1] == 0x01) {

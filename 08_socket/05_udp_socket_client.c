@@ -14,13 +14,13 @@ void udp_msg_sender(int fd, struct sockaddr* dst) {
     while (1) {
         char buf[BUFF_LEN] = "TEST UDP MSG!\n";
         len                = sizeof(*dst);
-        printf("client:%s\n", buf); // 打印自己发送的信息
+        printf("client:%s\n", buf); // Print the message sent by self
         sendto(fd, buf, BUFF_LEN, 0, dst, len);
         memset(buf, 0, BUFF_LEN);
         recvfrom(fd, buf, BUFF_LEN, 0, (struct sockaddr*) &src,
-            &len); // 接收来自server的信息
+            &len); // Receive message from server
         printf("server:%s\n", buf);
-        sleep(1); // 一秒发送一次消息
+        sleep(1); // Send a message once per second
     }
 }
 
@@ -42,8 +42,10 @@ int main(int argc, char* argv[]) {
     memset(&ser_addr, 0, sizeof(ser_addr));
     ser_addr.sin_family = AF_INET;
     // ser_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
-    ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);  // 注意网络序转换
-    ser_addr.sin_port        = htons(SERVER_PORT); // 注意网络序转换
+    ser_addr.sin_addr.s_addr
+        = htonl(INADDR_ANY); // Note: network byte order conversion
+    ser_addr.sin_port
+        = htons(SERVER_PORT); // Note: network byte order conversion
 
     udp_msg_sender(client_fd, (struct sockaddr*) &ser_addr);
 

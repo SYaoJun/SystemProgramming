@@ -14,7 +14,8 @@ int get_ephemeral_port(int server_port, int lfd) {
         struct sockaddr_in ad;
         memset(&ad, 0, sizeof(struct sockaddr_in));
         socklen_t len = sizeof(struct sockaddr_in);
-        // 5. 获取临时端口PORT, 返回这个fd绑定的address，后两个参数是出参
+        // 5. Get ephemeral port, returns the address bound to this fd; the last
+        // two parameters are output params
         if (getsockname(lfd, (struct sockaddr*) &ad, &len) == -1) {
             perror("getsockname: ");
             exit(EXIT_FAILURE);
@@ -34,32 +35,33 @@ int main(int argc, char* argv[]) {
     if (argc >= 2) {
         server_port = atoi(argv[0]);
     }
-    // 1. 创建一个socket
+    // 1. Create a socket
     int lfd = socket(AF_INET, SOCK_STREAM, 0);
     if (lfd == -1) {
         perror("create socket");
         exit(EXIT_FAILURE);
     }
-    // 2. 端口复用
+    // 2. Port reuse
     int reuse = 1;
     setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     struct sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
-    // 如果port=0，则表示使用临时端口，系统随机分配没有被占用的端口
+    // If port=0, use an ephemeral port; the system randomly assigns an unused
+    // port
     /*
         If this is zero or this argument pair is absent, then uqchessserver is
        to use an ephemeral port. host to network
     */
     serverAddr.sin_port = htons(server_port);
-    // 本机任意IP到达的客户端请求
+    // Client requests from any local IP
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    // 3. 绑定IP
+    // 3. Bind IP
     if (bind(lfd, (struct sockaddr*) &serverAddr, sizeof(struct sockaddr))
         == -1) {
         perror("bind: ");
         exit(EXIT_FAILURE);
     }
-    // 4. 设置监听上限
+    // 4. Set listen backlog
     if (listen(lfd, MAX_CONNECTION) == -1) {
         perror("listen: ");
         exit(EXIT_FAILURE);

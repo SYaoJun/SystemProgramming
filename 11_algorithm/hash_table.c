@@ -1,12 +1,12 @@
 /*
-1. C语言实现哈希表
+1. Hash table implementation in C
 key: string
 value: void*
-2. 编译命令
+2. Compile command
 gcc dict.c -g -w
-3. 输出结果
-添加成功
-添加成功
+3. Output
+Add succeeded
+Add succeeded
 value = 300
 */
 #include <stdio.h>
@@ -28,7 +28,8 @@ typedef struct dict {
 
 static int dictPut(dict* ht, void* key, void* val);
 static int dictDelete(dict* ht, const void* key);
-// 这里可以用字符串哈希替代，或者自定义编码方式，将字符串转换为整形
+// A string hash can be used here instead, or a custom encoding method to
+// convert strings to integers
 int hashCode(dict* ht, void* key) {
     char*         k = (char*) key;
     unsigned long h = 0;
@@ -45,7 +46,7 @@ int hashCode(dict* ht, void* key) {
 
 static void* dictGet(dict* ht, void* key) {
     int t = hashCode(ht, key);
-    // 从第一个有效的节点开始遍历
+    // start traversing from the first valid node
     dictEntry* cursor = ht->table[t]->next;
     while (cursor) {
         if (strcmp((char*) cursor->key, (char*) key) == 0) {
@@ -57,7 +58,7 @@ static void* dictGet(dict* ht, void* key) {
 }
 
 static int dictPut(dict* ht, void* key, void* val) {
-    // 判断key是否存在
+    // check if the key already exists
     if (dictGet(ht, key) != NULL) {
         return 0;
     }
@@ -65,7 +66,7 @@ static int dictPut(dict* ht, void* key, void* val) {
     dictEntry_->key       = key;
     dictEntry_->val       = val;
     dictEntry_->next      = NULL;
-    // 根据key生成hashCode
+    // generate hashCode based on key
     int t              = hashCode(ht, key);
     dictEntry_->next   = ht->table[t]->next;
     ht->table[t]->next = dictEntry_;
@@ -88,7 +89,7 @@ int main() {
     dict_->table = (dictEntry**) malloc(N * sizeof(dictEntry*));
     dictEntry* dictEntry_;
     for (i = 0; i < dict_->size; i++) {
-        // 虚拟头节点
+        // dummy head node
         dictEntry_      = (dictEntry*) malloc(sizeof(dictEntry));
         dictEntry_->key = dictEntry_->val = dictEntry_->next = NULL;
         dict_->table[i]                                      = dictEntry_;

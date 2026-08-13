@@ -1,16 +1,16 @@
 #include <stdio.h>
 
-// 比较函数的指针类型
+// Pointer type for comparison function
 typedef int (*compare_func_t)(int, int);
 
-// 交换两个整数的值
+// Swap two integer values
 void swap(int* a, int* b) {
     int temp = *a;
     *a       = *b;
     *b       = temp;
 }
 
-// 冒泡排序函数
+// Bubble sort function
 void bubbleSort(int arr[], int n, compare_func_t compare) {
     int i, j;
     for (i = 0; i < n - 1; i++) {
@@ -22,17 +22,17 @@ void bubbleSort(int arr[], int n, compare_func_t compare) {
     }
 }
 
-// 升序比较函数
+// Ascending comparison function
 int ascendingCompare(int a, int b) {
     return a > b;
 }
 
-// 降序比较函数
+// Descending comparison function
 int descendingCompare(int a, int b) {
     return a < b;
 }
 
-// 测试示例
+// Test example
 int main() {
     int arr[] = { 64, 34, 25, 12, 22, 11, 90 };
     int n     = sizeof(arr) / sizeof(arr[0]);

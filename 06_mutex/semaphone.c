@@ -4,68 +4,69 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 5 // 缓冲区的大小
+#define BUFFER_SIZE 5 // Buffer size
 
-int buffer[BUFFER_SIZE]; // 缓冲区数组
-int in  = 0;             // 生产者写入位置
-int out = 0;             // 消费者读取位置
+int buffer[BUFFER_SIZE]; // Buffer array
+int in  = 0;             // Producer write position
+int out = 0;             // Consumer read position
 
-sem_t           empty; // 用于表示空缓冲区槽位的信号量
-sem_t           full;  // 用于表示满缓冲区槽位的信号量
-pthread_mutex_t mutex; // 保护缓冲区的互斥锁
+sem_t           empty; // Semaphore for empty buffer slots
+sem_t           full;  // Semaphore for full buffer slots
+pthread_mutex_t mutex; // Mutex to protect the buffer
 
 void* producer(void* arg) {
     int item;
     while (1) {
-        item = rand() % 100;        // 生成一个随机数作为生产的项目
-        sem_wait(&empty);           // 等待空槽位
-        pthread_mutex_lock(&mutex); // 锁定缓冲区
+        item = rand() % 100; // Generate a random number as the produced item
+        sem_wait(&empty);    // Wait for an empty slot
+        pthread_mutex_lock(&mutex); // Lock the buffer
 
-        buffer[in] = item; // 将项目写入缓冲区
+        buffer[in] = item; // Write item into the buffer
         printf("Produced: %d\n", item);
-        in = (in + 1) % BUFFER_SIZE; // 更新写入位置
+        in = (in + 1) % BUFFER_SIZE; // Update write position
 
-        pthread_mutex_unlock(&mutex); // 解锁缓冲区
-        sem_post(&full);              // 增加满槽位信号量
+        pthread_mutex_unlock(&mutex); // Unlock the buffer
+        sem_post(&full);              // Increment full-slot semaphore
 
-        sleep(1); // 模拟生产时间
+        sleep(1); // Simulate production time
     }
 }
 
 void* consumer(void* arg) {
     int item;
     while (1) {
-        sem_wait(&full);            // 等待满槽位
-        pthread_mutex_lock(&mutex); // 锁定缓冲区
+        sem_wait(&full);            // Wait for a full slot
+        pthread_mutex_lock(&mutex); // Lock the buffer
 
-        item = buffer[out]; // 从缓冲区读取项目
+        item = buffer[out]; // Read item from the buffer
         printf("Consumed: %d\n", item);
-        out = (out + 1) % BUFFER_SIZE; // 更新读取位置
+        out = (out + 1) % BUFFER_SIZE; // Update read position
 
-        pthread_mutex_unlock(&mutex); // 解锁缓冲区
-        sem_post(&empty);             // 增加空槽位信号量
+        pthread_mutex_unlock(&mutex); // Unlock the buffer
+        sem_post(&empty);             // Increment empty-slot semaphore
 
-        sleep(2); // 模拟消费时间
+        sleep(2); // Simulate consumption time
     }
 }
 
 int main() {
     pthread_t prod_thread, cons_thread;
 
-    // 初始化信号量和互斥锁
-    sem_init(&empty, 0, BUFFER_SIZE); // 空槽位信号量初始化为缓冲区大小
-    sem_init(&full, 0, 0);            // 满槽位信号量初始化为0
-    pthread_mutex_init(&mutex, NULL); // 初始化互斥锁
+    // Initialize semaphores and mutex
+    sem_init(&empty, 0,
+        BUFFER_SIZE);      // Empty-slot semaphore initialized to buffer size
+    sem_init(&full, 0, 0); // Full-slot semaphore initialized to 0
+    pthread_mutex_init(&mutex, NULL); // Initialize mutex
 
-    // 创建生产者和消费者线程
+    // Create producer and consumer threads
     pthread_create(&prod_thread, NULL, producer, NULL);
     pthread_create(&cons_thread, NULL, consumer, NULL);
 
-    // 等待线程完成
+    // Wait for threads to finish
     pthread_join(prod_thread, NULL);
     pthread_join(cons_thread, NULL);
 
-    // 销毁信号量和互斥锁
+    // Destroy semaphores and mutex
     sem_destroy(&empty);
     sem_destroy(&full);
     pthread_mutex_destroy(&mutex);

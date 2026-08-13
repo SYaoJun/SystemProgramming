@@ -1,5 +1,5 @@
 /*
-单链表的C语言实现
+Singly linked list implementation in C
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +20,7 @@ void add_node(int value, List* list) {
     ListNode* node = (ListNode*) malloc(sizeof(ListNode));
     node->next     = NULL;
     node->value    = value;
-    // 当前链表中是否存在节点元素
+    // check if there are existing nodes in the list
     if (list->tail == NULL) {
         list->tail = list->head = node;
     } else {
@@ -38,7 +38,7 @@ void remove_node(int value, List* list) {
     ListNode* prev   = NULL;
     while (cursor) {
         if (cursor->value == value) {
-            // 删除的是不是头部和尾部
+            // check if deleting head or tail
             if (prev != NULL) {
                 prev->next = cursor->next;
             } else {

@@ -5,26 +5,26 @@
 #include <unistd.h>
 void sigpipe_handler(int signum) {
     printf("Caught SIGPIPE signal: %d\n", signum);
-    exit(1); // 退出程序
+    exit(1); // Exit the program
 }
 
 int main() {
     int  pipefd[2];
     char buffer[] = "Hello, World!";
 
-    // 创建管道
+    // Create pipe
     if (pipe(pipefd) == -1) {
         perror("pipe");
         exit(EXIT_FAILURE);
     }
 
-    // 安装SIGPIPE信号处理程序
+    // Install SIGPIPE signal handler
     signal(SIGPIPE, sigpipe_handler);
 
     pid_t pid = fork();
     if (pid == 0) {
         // child
-        // 子读0 父写1
+        // Child reads from 0, parent writes to 1
         close(pipefd[1]);
         char buf[1024];
         read(pipefd[0], buf, sizeof(buf));

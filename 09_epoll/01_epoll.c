@@ -59,14 +59,14 @@ void handle_new_connection(int epoll_fd, int listen_fd) {
     printf("Accepted new connection from %s:%d\n",
         inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
-    // 设置client_fd为非阻塞
+    // Set client_fd to non-blocking
     if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1) {
         perror("fcntl failed");
         close(client_fd);
         return;
     }
 
-    // 将新的客户端套接字添加到epoll监听
+    // Add the new client socket to epoll for monitoring
     struct epoll_event ev;
     ev.events  = EPOLLIN;
     ev.data.fd = client_fd;
@@ -78,17 +78,17 @@ void handle_new_connection(int epoll_fd, int listen_fd) {
 }
 
 int main() {
-    // 创建epoll实例
+    // Create epoll instance
     int epoll_fd = epoll_create1(0);
     if (epoll_fd == -1) {
         perror("epoll_create1 failed");
         return -1;
     }
 
-    // 监听多个IP地址
-    const char* ips[]
-        = { "192.168.1.100", "192.168.1.101" }; // 要监听的IP地址列表
-    int ports[] = { 8080, 8081 };               // 对应的端口列表
+    // Listen on multiple IP addresses
+    const char* ips[]   = { "192.168.1.100",
+        "192.168.1.101" };                // List of IP addresses to listen on
+    int         ports[] = { 8080, 8081 }; // Corresponding port list
 
     for (int i = 0; i < sizeof(ips) / sizeof(ips[0]); ++i) {
         int listen_fd = create_and_bind(ips[i], ports[i]);
@@ -97,7 +97,7 @@ int main() {
             return -1;
         }
 
-        // 将监听套接字添加到epoll实例
+        // Add the listening socket to the epoll instance
         struct epoll_event ev;
         ev.events  = EPOLLIN;
         ev.data.fd = listen_fd;
@@ -110,7 +110,7 @@ int main() {
         }
     }
 
-    // 循环等待事件
+    // Loop waiting for events
     struct epoll_event events[MAX_EVENTS];
     while (1) {
         int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
@@ -121,19 +121,19 @@ int main() {
 
         for (int i = 0; i < nfds; ++i) {
             if (events[i].events & EPOLLIN) {
-                // 检查是否是监听套接字上的事件
+                // Check if this is an event on the listening socket
                 if (events[i].data.fd == listen_fd) {
                     handle_new_connection(epoll_fd, listen_fd);
                 } else {
-                    // 处理已连接客户端的数据
+                    // Handle data from connected client
                     printf("Data from client: %d\n", events[i].data.fd);
-                    // 这里可以添加读取和处理数据的逻辑
+                    // Logic for reading and processing data can be added here
                 }
             }
         }
     }
 
-    // 清理资源
+    // Clean up resources
     close(epoll_fd);
     return 0;
 }

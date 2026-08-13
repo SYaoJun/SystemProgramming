@@ -11,7 +11,7 @@ int main() {
     sigemptyset(&newmask);
     sigaddset(&newmask, SIGINT);
 
-    // 父进程阻塞 SIGINT 信号
+    // Parent process blocks SIGINT
     if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0) {
         perror("sigprocmask");
         return 1;
@@ -19,33 +19,33 @@ int main() {
 
     pid_t pid = fork();
     if (pid == 0) {
-        // 子进程
+        // Child process
         struct sigaction sa;
         sa.sa_handler = handle_sigint;
         sigemptyset(&sa.sa_mask);
         sa.sa_flags = 0;
 
-        // 子进程解除对 SIGINT 的阻塞，并设置处理函数
+        // Child process unblocks SIGINT and sets handler
         if (sigaction(SIGINT, &sa, NULL) < 0) {
             perror("sigaction");
             return 1;
         }
 
         while (1) {
-            // 子进程的执行逻辑
+            // Child process execution logic
         }
     } else if (pid > 0) {
-        // 父进程
+        // Parent process
         printf("Parent process\n");
         sleep(5);
 
-        // 父进程恢复原来的信号掩码
+        // Parent process restores original signal mask
         if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0) {
             perror("sigprocmask");
             return 1;
         }
     } else {
-        // fork 失败
+        // fork failed
         perror("fork");
         return 1;
     }

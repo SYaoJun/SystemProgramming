@@ -5,31 +5,31 @@
 
 void sigpipe_handler(int signum) {
     printf("Caught SIGPIPE signal: %d\n", signum);
-    exit(1); // 退出程序
+    exit(1); // Exit the program
 }
 
 int main() {
     int  pipefd[2];
     char buffer[] = "Hello, World!";
 
-    // 创建管道
+    // Create pipe
     if (pipe(pipefd) == -1) {
         perror("pipe");
         exit(EXIT_FAILURE);
     }
 
-    // 安装SIGPIPE信号处理程序
+    // Install SIGPIPE signal handler
     signal(SIGPIPE, sigpipe_handler);
 
-    // 关闭管道的读端
+    // Close the read end of the pipe
     close(pipefd[0]);
 
-    // 向管道写入数据，产生SIGPIPE信号
+    // Write data to the pipe, triggering SIGPIPE signal
     if (write(pipefd[1], buffer, sizeof(buffer)) == -1) {
         perror("write");
     }
 
-    // 关闭管道的写端
+    // Close the write end of the pipe
     close(pipefd[1]);
 
     return 0;

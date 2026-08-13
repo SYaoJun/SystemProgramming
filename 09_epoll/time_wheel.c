@@ -7,7 +7,7 @@
 
 #define BUFFER_SIZE 64
 class tw_timer;
-struct client_data // 绑定socket和定时器
+struct client_data // Bind socket and timer
 {
     sockaddr_in address;
     int         sockfd;
@@ -15,7 +15,7 @@ struct client_data // 绑定socket和定时器
     tw_timer*   timer;
 };
 
-class tw_timer // 定时器类
+class tw_timer // Timer class
 {
 public:
     tw_timer(int rot, int ts)
@@ -26,21 +26,22 @@ public:
     }
 
 public:
-    int rotation;                  // 记录该定时器在时间轮转多少圈后生效
-    int time_slot;                 // 记录定时器属于那个槽
-    void (*cb_func)(client_data*); // 定时器回调函数
-    client_data* user_data;        // 用户数据
-    tw_timer*    next;             // 指向上一个定时器
-    tw_timer*    prev;             // 指向下一个定时器
+    int rotation;  // Records how many rotations of the time wheel before this
+                   // timer takes effect
+    int time_slot; // Records which slot the timer belongs to
+    void (*cb_func)(client_data*); // Timer callback function
+    client_data* user_data;        // User data
+    tw_timer*    next;             // Pointer to the previous timer
+    tw_timer*    prev;             // Pointer to the next timer
 };
 
-class time_wheel // 事件轮管理定时器
+class time_wheel // Time wheel manages timers
 {
 public:
     time_wheel()
         : cur_slot(0) {
         for (int i = 0; i < N; ++i) {
-            slots[i] = NULL; // 每个槽的头节点初始化为空
+            slots[i] = NULL; // Initialize the head node of each slot to NULL
         }
     }
     ~time_wheel() {
@@ -48,29 +49,35 @@ public:
             tw_timer* tmp = slots[i];
             while (tmp) {
                 slots[i] = tmp->next;
-                delete tmp; // 遍历每个槽销毁new分配在堆中的定时器
+                delete tmp; // Iterate each slot to destroy timers allocated on
+                            // the heap with new
                 tmp = slots[i];
             }
         }
     }
-    tw_timer* add_timer(int timeout) // 添加新的定时器，插入到合适的槽中
+    tw_timer* add_timer(
+        int timeout) // Add a new timer and insert it into the appropriate slot
     {
-        if (timeout < 0) // 时间错误
+        if (timeout < 0) // Invalid time
         {
             return NULL;
         }
         int ticks = 0;
-        if (timeout < TI) // 小于每个槽的interval，则为1
+        if (timeout < TI) // If less than the interval of each slot, set to 1
         {
             ticks = 1;
         } else {
-            ticks = timeout / TI; // 相对当前位置的槽数
+            ticks = timeout
+                / TI; // Number of slots relative to the current position
         }
-        int       rotation = ticks / N;                    // 记录多少圈后生效
-        int       ts       = (cur_slot + (ticks % N)) % N; // 确定插入槽的位置
+        int rotation
+            = ticks / N; // Records how many rotations before taking effect
+        int ts = (cur_slot + (ticks % N))
+            % N; // Determine the slot position to insert
         tw_timer* timer
-            = new tw_timer(rotation, ts); // 根据位置和圈数，插入对应的槽中
-        if (!slots[ts])                   // 所在槽头节点为空，直接插入
+            = new tw_timer(rotation, ts); // Insert into the corresponding slot
+                                          // based on position and rotation
+        if (!slots[ts]) // Head node of the slot is empty, insert directly
         {
             printf("add timer, rotation is %d, ts is %d, cur_slot is %d\n",
                 rotation, ts, cur_slot);
@@ -80,14 +87,14 @@ public:
             slots[ts]->prev = timer;
             slots[ts]       = timer;
         }
-        return timer; // 返回含有时间信息和所在槽位置的定时器
+        return timer; // Return the timer with time info and slot position
     }
-    void del_timer(tw_timer * timer) // 从时间轮上删除定时器
+    void del_timer(tw_timer * timer) // Remove timer from the time wheel
     {
         if (!timer) {
             return;
         }
-        int ts = timer->time_slot; // 找到所在槽
+        int ts = timer->time_slot; // Find the slot it belongs to
         if (timer == slots[ts]) {
             slots[ts] = slots[ts]->next;
             if (slots[ts]) {
@@ -103,16 +110,18 @@ public:
         }
     }
     void tick() {
-        tw_timer* tmp = slots[cur_slot]; // 取出当前槽的头节点
+        tw_timer* tmp
+            = slots[cur_slot]; // Get the head node of the current slot
         printf("current slot is %d\n", cur_slot);
-        while (tmp) // 遍历
+        while (tmp) // Iterate
         {
             printf("tick the timer once\n");
             if (tmp->rotation > 0) {
                 tmp->rotation--;
                 tmp = tmp->next;
             } else {
-                tmp->cb_func(tmp->user_data); // 符合条件，调用回调函数
+                tmp->cb_func(
+                    tmp->user_data); // Condition met, invoke callback function
                 if (tmp == slots[cur_slot]) {
                     printf("delete header in cur_slot\n");
                     slots[cur_slot] = tmp->next;

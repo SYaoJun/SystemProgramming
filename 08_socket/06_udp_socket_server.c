@@ -8,25 +8,29 @@
 #define BUFF_LEN 1024
 
 void handle_udp_msg(int fd) {
-    char               buf[BUFF_LEN]; // 接收缓冲区，1024字节
-    socklen_t          len;
-    int                count;
-    struct sockaddr_in clent_addr; // clent_addr用于记录发送方的地址信息
+    char      buf[BUFF_LEN]; // Receive buffer, 1024 bytes
+    socklen_t len;
+    int       count;
+    struct sockaddr_in
+        clent_addr; // clent_addr records the sender address information
     while (1) {
         memset(buf, 0, BUFF_LEN);
         len   = sizeof(clent_addr);
         count = recvfrom(fd, buf, BUFF_LEN, 0, (struct sockaddr*) &clent_addr,
-            &len); // recvfrom是拥塞函数，没有数据就一直拥塞
+            &len); // recvfrom is a blocking function; it blocks when there is
+                   // no data
         if (count == -1) {
             printf("recieve data fail!\n");
             return;
         }
-        printf("client:%s\n", buf); // 打印client发过来的信息
+        printf("client:%s\n", buf); // Print the message received from client
         memset(buf, 0, BUFF_LEN);
-        sprintf(buf, "I have recieved %d bytes data!\n", count); // 回复client
-        printf("server:%s\n", buf); // 打印自己发送的信息给
+        sprintf(
+            buf, "I have recieved %d bytes data!\n", count); // Reply to client
+        printf("server:%s\n", buf); // Print the message sent by self
         sendto(fd, buf, BUFF_LEN, 0, (struct sockaddr*) &clent_addr,
-            len); // 发送信息给client，注意使用了clent_addr结构体指针
+            len); // Send message to client; note the use of clent_addr struct
+                  // pointer
     }
 }
 
@@ -48,8 +52,10 @@ int main(int argc, char* argv[]) {
     memset(&ser_addr, 0, sizeof(ser_addr));
     ser_addr.sin_family = AF_INET;
     ser_addr.sin_addr.s_addr
-        = htonl(INADDR_ANY); // IP地址，需要进行网络序转换，INADDR_ANY：本地地址
-    ser_addr.sin_port = htons(SERVER_PORT); // 端口号，需要网络序转换
+        = htonl(INADDR_ANY); // IP address, needs network byte order conversion;
+                             // INADDR_ANY: local address
+    ser_addr.sin_port = htons(
+        SERVER_PORT); // Port number, needs network byte order conversion
 
     ret = bind(server_fd, (struct sockaddr*) &ser_addr, sizeof(ser_addr));
     if (ret < 0) {
@@ -57,7 +63,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    handle_udp_msg(server_fd); // 处理接收到的数据
+    handle_udp_msg(server_fd); // Handle received data
 
     close(server_fd);
     return 0;

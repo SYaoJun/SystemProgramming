@@ -16,15 +16,15 @@ int main() {
     struct sigaction sa_usr;
 
     sa_usr.sa_flags   = 0;
-    sa_usr.sa_handler = sig_usr; // 设置信号处理函数
+    sa_usr.sa_handler = sig_usr; // Set signal handler
 
-    // 为 SIGUSR1 信号设置处理动作
+    // Set handler action for SIGUSR1
     if (sigaction(SIGUSR1, &sa_usr, NULL) == -1) {
         perror("sigaction for SIGUSR1 failed");
         return 1;
     }
 
-    // 为 SIGUSR2 信号设置处理动作
+    // Set handler action for SIGUSR2
     if (sigaction(SIGUSR2, &sa_usr, NULL) == -1) {
         perror("sigaction for SIGUSR2 failed");
         return 1;
@@ -33,7 +33,7 @@ int main() {
     printf("My PID is %d\n", getpid());
 
     while (1) {
-        // 这里可以进行其他的程序逻辑
+        // Other program logic can go here
         sleep(1);
     }
 

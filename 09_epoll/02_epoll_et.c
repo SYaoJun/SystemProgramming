@@ -14,15 +14,16 @@
 #include <unistd.h>
 #define MAX_EVENT_NUMBER 1024
 #define BUFFER_SIZE 10
-/*将文件描述符设置成非阻塞的*/
+/* Set the file descriptor to non-blocking */
 int setnonblocking(int fd) {
     int old_option = fcntl(fd, F_GETFL);
     int new_option = old_option | O_NONBLOCK;
     fcntl(fd, F_SETFL, new_option);
     return old_option;
 }
-/*将文件描述符fd上的EPOLLIN注册到epollfd指示的epoll内核事件表中，参数
-enable_et指定是否对fd启用ET模式*/
+/* Register EPOLLIN on file descriptor fd into the epoll kernel event table
+indicated by epollfd; the parameter enable_et specifies whether to enable ET
+mode for fd */
 void addfd(int epollfd, int fd, bool enable_et) {
     struct epoll_event event;
     event.data.fd = fd;
@@ -33,7 +34,7 @@ void addfd(int epollfd, int fd, bool enable_et) {
     epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &event);
     setnonblocking(fd);
 }
-/*LT模式的工作流程*/
+/* Workflow of LT mode */
 void lt(struct epoll_event* events, int number, int epollfd, int listenfd) {
     char buf[BUFFER_SIZE];
     for (int i = 0; i < number; i++) {
@@ -44,9 +45,10 @@ void lt(struct epoll_event* events, int number, int epollfd, int listenfd) {
             socklen_t          client_addrlength = sizeof(client_address);
             int connfd = accept(listenfd, (struct sockaddr*) &client_address,
                 &client_addrlength);
-            addfd(epollfd, connfd, false); /*对connfd禁用ET模式*/
+            addfd(epollfd, connfd, false); /* Disable ET mode for connfd */
         } else if (events[i].events & EPOLLIN) {
-            /*只要socket读缓存中还有未读出的数据，这段代码就被触发*/
+            /* This code is triggered as long as there is unread data in the
+            socket read buffer */
             printf("event trigger once\n");
             memset(buf, '\0', BUFFER_SIZE);
             int ret = recv(sockfd, buf, BUFFER_SIZE - 1, 0);
@@ -60,7 +62,7 @@ void lt(struct epoll_event* events, int number, int epollfd, int listenfd) {
         }
     }
 }
-/*ET模式的工作流程*/
+/* Workflow of ET mode */
 void et(struct epoll_event* events, int number, int epollfd, int listenfd) {
     char buf[BUFFER_SIZE];
     for (int i = 0; i < number; i++) {
@@ -71,17 +73,18 @@ void et(struct epoll_event* events, int number, int epollfd, int listenfd) {
             socklen_t          client_addrlength = sizeof(client_address);
             int connfd = accept(listenfd, (struct sockaddr*) &client_address,
                 &client_addrlength);
-            addfd(epollfd, connfd, true); /*对connfd开启ET模式*/
+            addfd(epollfd, connfd, true); /* Enable ET mode for connfd */
         } else if (events[i].events & EPOLLIN) {
-            /*这段代码不会被重复触发，所以我们循环读取数据，以确保把socket读缓存中的所
-            有数据读出*/
+            /* This code will not be triggered repeatedly, so we read data in a
+            loop to ensure all data in the socket read buffer is read out */
             printf("event trigger once\n");
             while (1) {
                 memset(buf, '\0', BUFFER_SIZE);
                 int ret = recv(sockfd, buf, BUFFER_SIZE - 1, 0);
                 if (ret < 0) {
-                    /*对于非阻塞IO，下面的条件成立表示数据已经全部读取完毕。此后，epoll就能再次
-                    触发sockfd上的EPOLLIN事件，以驱动下一次读操作*/
+                    /* For non-blocking IO, the following condition being true
+                    means all data has been read. After that, epoll can trigger
+                    EPOLLIN on sockfd again to drive the next read operation */
                     if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
                         printf("read later\n");
                         break;
@@ -130,9 +133,9 @@ int main(int argc, char* argv[]) {
             printf("epoll failure\n");
             break;
         }
-        // lt(events, ret, epollfd, listenfd); /*使用LT模式*/
+        // lt(events, ret, epollfd, listenfd); /* Use LT mode */
 
-        et(events, ret, epollfd, listenfd); /*使用ET模式*/
+        et(events, ret, epollfd, listenfd); /* Use ET mode */
     }
     close(listenfd);
     return 0;

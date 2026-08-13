@@ -17,9 +17,9 @@
 void A(int pipeAB[PIPE_READ_AND_WRITE], int pipeAC[PIPE_READ_AND_WRITE]) {
     close(pipeAB[PIPE_READ]);
     close(pipeAC[PIPE_READ]);
-    // 把标准输出设置为管道AB的写端
+    // Redirect stdout to the write end of pipe AB
     dup2(pipeAB[PIPE_WRITE], STDOUT_FILENO);
-    // 把标准错误设置为管道AC的写端
+    // Redirect stderr to the write end of pipe AC
     dup2(pipeAC[PIPE_WRITE], STDERR_FILENO);
     close(pipeAB[PIPE_WRITE]);
     close(pipeAC[PIPE_WRITE]);
@@ -34,7 +34,8 @@ void B(int pipeAB[PIPE_READ_AND_WRITE], int pipeAC[PIPE_READ_AND_WRITE]) {
     close(pipeAB[PIPE_WRITE]);
     close(pipeAC[PIPE_READ]);
     close(pipeAC[PIPE_WRITE]);
-    // 把标准输入设置为从AB的读端读入数据，把AB读端复制到标准输入，操作标准输入就是操作AB读端
+    // Redirect stdin to read from the read end of pipe AB; dup2 the read end
+    // to stdin so operating on stdin operates on the AB read end
     dup2(pipeAB[PIPE_READ], STDIN_FILENO);
     close(pipeAB[PIPE_READ]);
 
@@ -48,7 +49,7 @@ void C(int pipeAB[PIPE_READ_AND_WRITE], int pipeAC[PIPE_READ_AND_WRITE]) {
     close(pipeAB[PIPE_READ]);
     close(pipeAB[PIPE_WRITE]);
     close(pipeAC[PIPE_WRITE]);
-    // 把标准输入设置为从AC的读端读入数据
+    // Redirect stdin to read from the read end of pipe AC
     dup2(pipeAC[PIPE_READ], STDIN_FILENO);
     close(pipeAC[PIPE_READ]);
     char buf[1024];

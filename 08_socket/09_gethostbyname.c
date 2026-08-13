@@ -10,27 +10,27 @@ int main() {
     struct sockaddr_in serv_addr;
     struct hostent*    server;
 
-    // 创建socket
+    // Create socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         perror("ERROR opening socket");
         exit(1);
     }
 
-    // 解析服务器地址
-    server = gethostbyname("localhost"); // 使用localhost作为示例
+    // Resolve server address
+    server = gethostbyname("localhost"); // Use localhost as an example
     if (server == NULL) {
         fprintf(stderr, "ERROR, no such host\n");
         exit(0);
     }
 
-    // 构建服务器地址结构
+    // Build server address structure
     memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port   = htons(3306); // mysql默认端口
+    serv_addr.sin_port   = htons(3306); // MySQL default port
     memcpy(&serv_addr.sin_addr.s_addr, server->h_addr, server->h_length);
 
-    // 连接到服务器
+    // Connect to server
     ret = connect(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr));
     if (ret < 0) {
         perror("ERROR connecting");
@@ -39,9 +39,9 @@ int main() {
 
     printf("Connected to MySQL server\n");
 
-    // ... 进行通信 ...
+    // ... Communicate ...
 
-    // 关闭socket
+    // Close socket
     close(sockfd);
     return 0;
 }

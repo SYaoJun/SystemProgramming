@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
     address.sin_family = AF_INET;
     inet_pton(AF_INET, ip, &address.sin_addr);
     address.sin_port = htons(port);
-    /*创建TCP socket，并将其绑定到端口port上*/
+    /* Create a TCP socket and bind it to port */
     int listenfd = socket(PF_INET, SOCK_STREAM, 0);
     assert(listenfd >= 0);
     ret = bind(listenfd, (struct sockaddr*) &address, sizeof(address));
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     ret = listen(listenfd, 5);
     assert(ret != -1);
 
-    /*创建UDP socket，并将其绑定到端口port上*/
+    /* Create a UDP socket and bind it to port */
     bzero(&address, sizeof(address));
     address.sin_family = AF_INET;
     inet_pton(AF_INET, ip, &address.sin_addr);
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
     struct epoll_event events[MAX_EVENT_NUMBER];
     int                epollfd = epoll_create(5);
     assert(epollfd != -1);
-    /*注册TCP socket和UDP socket上的可读事件*/
+    /* Register readable events on both TCP socket and UDP socket */
     addfd(epollfd, listenfd);
     addfd(epollfd, udpfd);
     while (1) {

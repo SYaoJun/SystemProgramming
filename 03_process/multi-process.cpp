@@ -1,5 +1,5 @@
 //
-// Created by 姚军 on 2022/8/13.
+// Created by Yao Jun on 2022/8/13.
 //
 
 #include <chrono>
@@ -21,7 +21,7 @@ LL                get_interval_sum(int start) {
     return temp;
 }
 int main() {
-    // 5个进程并行计算
+    // 5 processes computing in parallel
     int  THREAD_NUM = 5;
     LL   total_sum  = 0;
     auto start      = std::chrono::steady_clock::now();
@@ -29,21 +29,22 @@ int main() {
     for (i = 0; i < THREAD_NUM; i++) {
         pid_t pid = fork(); // n  2^n-1  n
         if (pid == 0) {
-            // 进程之间变量不可见，怎么改呢？
+            // Variables are not visible between processes, how to fix this?
             total_sum += get_interval_sum(i);
             break;
         }
     }
-    if (i < THREAD_NUM) { // 子进程退出
+    if (i < THREAD_NUM) { // Child process exits
         // printf("I'm %dth child, pid = %u, ppid = %u\n", i + 1, getpid(),
         // getppid());
-    } else { // 父进程退出
-        // wait(NULL); //NULL不关心子进程退出的状态
-        // waitpid回收指定进程
-        // argv_1: pid指定子进程，-1任意子进程
-        // argv_2: 子进程退出的状态，出参。
+    } else { // Parent process exits
+        // wait(NULL); // NULL: do not care about child process exit status
+        // waitpid reclaims a specified process
+        // argv_1: pid specifies child process, -1 for any child process
+        // argv_2: child process exit status, output parameter.
         // argv_3:
-        // WNOHANG不阻塞，通过轮询回收，回收成功返回子进程pid，回收失败返回0，出错返回-1
+        // WNOHANG: non-blocking, reclaim by polling; returns child pid on
+        // success, 0 if not yet exited, -1 on error
         int reclaim_num = 0;
         do {
             auto wpid = waitpid(-1, NULL, WNOHANG);
@@ -54,7 +55,7 @@ int main() {
 
         printf("I'm parent, pid = %u, ppid = %u\n", getpid(), getppid());
         printf("multi-process result = %lld\n", total_sum);
-        // 父进程等待子进程执行完毕再结束
+        // Parent process waits for child processes to finish before exiting
         auto end = std::chrono::steady_clock::now();
         auto duration_ms
             = std::chrono::duration_cast<std::chrono::microseconds>(end - start)

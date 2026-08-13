@@ -14,7 +14,7 @@ void reapChildren(int status) {
 int main() {
     int   i, status;
     pid_t pid;
-    signal(SIGCHLD, reapChildren); // 设置信号处理函数
+    signal(SIGCHLD, reapChildren); // Set signal handler
     puts("do something!");
     // raise(SIGCHLD);
     kill(getpid(), SIGCHLD);

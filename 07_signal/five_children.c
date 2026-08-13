@@ -13,16 +13,16 @@ void reapChildren(int status) {
 int main() {
     int   i, status;
     pid_t pid;
-    signal(SIGCHLD, reapChildren); // 设置信号处理函数
+    signal(SIGCHLD, reapChildren); // Set signal handler
 
     for (i = 0; i < 5; i++) {
         pid = fork();
 
         if (pid == 0) {
-            // 子进程
+            // Child process
             printf("Child process %d starting...\n", getpid());
-            // 子进程的工作...
-            sleep(2 * i); // 假设子进程执行了2秒钟的工作
+            // Child process work...
+            sleep(2 * i); // Assume child process does 2 seconds of work
             printf("Child process %d exiting...\n", getpid());
             exit(EXIT_SUCCESS);
         }

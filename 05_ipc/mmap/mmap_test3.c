@@ -11,14 +11,14 @@ int main() {
         perror("open error!");
         exit(1);
     }
-    // 申请共享映射
+    // Request shared mapping
     void* p = mmap(NULL, 6, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (p == MAP_FAILED) {
         perror("mmap error!");
         exit(1);
     }
     strcpy((char*) p + 4, "efg");
-    int ret = munmap(p, 8); // 释放共享映射
+    int ret = munmap(p, 8); // Release shared mapping
     if (ret == -1) {
         perror("munmap error!");
         exit(1);

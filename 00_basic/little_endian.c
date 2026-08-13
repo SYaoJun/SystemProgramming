@@ -2,7 +2,7 @@
 
 int main() {
     int a = 0x12345678;
-    // 通过指针的方式判断大小端
+    // Determine endianness via pointer
 
     char* p = (char*) &a;
     if (*p == 0x78) {

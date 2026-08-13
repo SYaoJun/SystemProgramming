@@ -10,19 +10,19 @@
 #include <sys/types.h>
 
 #define FILE_PATH "testfile"
-#define BUF_SIZE 4096 // 通常块设备的扇区大小
+#define BUF_SIZE 4096 // Typically the sector size of a block device
 
 int main() {
-    // 打开文件，使用 O_DIRECT 标志启用 Direct I/O
+    // Open file with O_DIRECT flag to enable Direct I/O
     int fd = open(FILE_PATH, O_WRONLY | O_CREAT | O_DIRECT, 0666);
     if (fd < 0) {
         perror("Failed to open file");
         return 1;
     }
 
-    // 分配未对齐的内存
+    // Allocate unaligned memory
     // char *buffer = (char *)malloc(BUF_SIZE);
-    // 如何分配对齐的内存呢？
+    // How to allocate aligned memory?
     // posix_memalign((void **)&buffer, BUF_SIZE, BUF_SIZE);
 
     //
@@ -32,9 +32,9 @@ int main() {
     //     close(fd);
     //     return 1;
     // }
-    // 使用 posix_memalign 来分配对齐内存，确保内存对齐
+    // Use posix_memalign to allocate aligned memory, ensuring memory alignment
     char* buffer = NULL;
-    // 分配4k大小，并对齐到4k
+    // Allocate 4K size, aligned to 4K
     if (posix_memalign((void**) &buffer, BUF_SIZE, BUF_SIZE) != 0) {
         perror("Failed to allocate aligned buffer");
         close(fd);
@@ -46,10 +46,10 @@ int main() {
     //     return 1;
     // }
 
-    // 填充缓冲区
+    // Fill the buffer
     memset(buffer, 'A', BUF_SIZE);
 
-    // 尝试写入文件
+    // Attempt to write to file
     ssize_t written = write(fd, buffer, BUF_SIZE);
     if (written < 0) {
         perror("Write failed");
@@ -57,7 +57,7 @@ int main() {
         printf("Write succeeded\n");
     }
 
-    // 清理资源
+    // Clean up resources
     free(buffer);
     close(fd);
 
