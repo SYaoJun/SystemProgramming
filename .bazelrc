@@ -1,0 +1,6 @@
+# Use clang-format config for build file formatting
+build --enable_platform_specific_config
+
+# macOS config
+build:macos --config=darwin
+build:darwin --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
